@@ -1,0 +1,46 @@
+<div class="row">
+  <h2>Job detail
+    <span class="pull-right">
+      <small>
+      <%= link raw("&larr; All Jobs"), to: "/" %>
+      </small>
+    </span>
+  </h2>
+
+  <div class="col-xs-12 col-md-8">
+    <h3><%= @project.name %></h3>
+    <p><i class="fa fa-calendar"></i> <%= "#{@project.inserted_at.month}/#{@project.inserted_at.day}/#{@project.inserted_at.year}" %> | <i class="fa fa-map-marker"></i> <%= @project.location %> | <span class="label label-success"><%= number_to_currency(@project.budget) %></span></p>
+    <br>
+    <legend>Description</legend>
+    <p><%= @project.description %></p>
+    <legend>Skills Wanted</legend>
+    <ul>
+      <%= for skill <- @skills do %>
+        <li><%= skill.name %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="col-xs-12 col-md-4">
+    <%= render "_submit_proposal.html", conn: @conn, proposal_changeset: @proposal_changeset, project: @project, current_user: @current_user %>
+  </div>
+
+  <%= if @awarded_proposal !== nil do %>
+    <div class="col-xs-12 col-md-8">
+      <h3 class="text-success">Awarded_proposal</h3>
+      <%= render_one @awarded_proposal, Lancer.ProjectView, "_awarded_proposal.html", as: :proposal %>
+    </div><!-- /.col-xs-12 col-md-8 -->
+  <% end %>
+
+  <%= if @project.proposals !== [] do %>
+    <div class="col-xs-12 col-md-8">
+      <h3>Proposals</h3>
+      <%= render_many @project.proposals, Lancer.ProjectView, "_proposal.html", as: :proposal,
+                            changeset: @changeset,
+                            action: project_path(@conn, :award_proposal, @project),
+                            current_user: @current_user,
+                            project: @project %>
+    </div><!-- /.col-xs-12 col-md-8 -->
+  <% end %>
+
+</div>
